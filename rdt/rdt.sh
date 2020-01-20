@@ -118,8 +118,8 @@ generate_tree () {
 
 parse_args () {
 	while (( $# > 0 )); do
-    case $1 in
-      -dpf ) depth_min=$2;                                     shift 2;; 
+		case $1 in
+			-dpf ) depth_min=$2;                                     shift 2;; 
 			-dps ) depth_max=$2;                                     shift 2;;
 			-if )  iter_min_num=$2;                                  shift 2;;
 			-is )  iter_min_num=$2;                                  shift 2;;
@@ -141,8 +141,8 @@ parse_args () {
 			-r ) dirname_rule=$2; filename_rule=$2; content_rule=$2; shift 2;;
 
 			* ) init_dir=$( realpath $1 );                           shift;;
-    esac
-  done
+		esac
+	done
 }
 
 show_help () {
@@ -150,26 +150,26 @@ show_help () {
 Usage: $(basename $0) [OPTIONS] DIRECTORY
 
 Options:											    
-  -h, --help  Show help text							
+	-h, --help  Show help text							
 
-  -dpf        Set minimal nesting depth				    
-  -dps        Set maximal nesting depth				    
-  -if         Set minimum iterations for each directory 
-  -is         Set maximum iterations for each directory 
-  -df         Set directory minimal name length		    
-  -ds         Set directory maximal name length		    
-  -ff         Set file minimal name length			    
-  -fs         Set file maximal name length			    
-  -cf         Set content minumal length				
-  -cs         Set content maximal length				
-  -dr         Set directory naming rule				    
-  -fr         Set file naming rule					    
-  -cr         Set content naming rule					
+	-dpf        Set minimal nesting depth				    
+	-dps        Set maximal nesting depth				    
+	-if         Set minimum iterations for each directory 
+	-is         Set maximum iterations for each directory 
+	-df         Set directory minimal name length		    
+	-ds         Set directory maximal name length		    
+	-ff         Set file minimal name length			    
+	-fs         Set file maximal name length			    
+	-cf         Set content minumal length				
+	-cs         Set content maximal length				
+	-dr         Set directory naming rule				    
+	-fr         Set file naming rule					    
+	-cr         Set content naming rule					
 
-  -d          Set depth as constant					    
-  -i          Set number of iterations as constant	    
-  -c          Set content length as constant			
-  -r          Set the same naming rule for everything
+	-d          Set depth as constant					    
+	-i          Set number of iterations as constant	    
+	-c          Set content length as constant			
+	-r          Set the same naming rule for everything
 	"
 	echo ""
 }
