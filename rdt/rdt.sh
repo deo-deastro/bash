@@ -118,8 +118,8 @@ generate_tree () {
 
 parse_args () {
 	while (( $# > 0 )); do
-        case $1 in
-            -dpf ) depth_min=$2;                                     shift 2;; 
+    case $1 in
+      -dpf ) depth_min=$2;                                     shift 2;; 
 			-dps ) depth_max=$2;                                     shift 2;;
 			-if )  iter_min_num=$2;                                  shift 2;;
 			-is )  iter_min_num=$2;                                  shift 2;;
@@ -141,8 +141,8 @@ parse_args () {
 			-r ) dirname_rule=$2; filename_rule=$2; content_rule=$2; shift 2;;
 
 			* ) init_dir=$( realpath $1 );                           shift;;
-        esac
-    done
+    esac
+  done
 }
 
 show_help () {
