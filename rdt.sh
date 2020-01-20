@@ -21,16 +21,25 @@ DEFAULT_CONTENT_MIN_LEN=50
 DEFAULT_CONTENT_MAX_LEN=500
 
 
+get_rand_num () {
+	local min=$1
+	local max=$2
+
+	if [[ $min -ne $max ]]; then
+		local num=$(( ( RANDOM % ( max - min) ) + min ))
+	else
+		local num=$max
+	fi
+
+	echo $num
+}
+
 get_rand_str () {
 	local min_len=${1-$DEFAULT_STR_MIN_LEN}
 	local max_len=${2-$DEFAULT_STR_MAX_LEN}
 	local rule=${3-$DEFAULT_RAND_STR_RULE}
 
-	if [[ $min_len -ne $max_len ]]; then
-		local def_len=$(( ( RANDOM % ( max_len - min_len) ) + min_len ))
-	else
-		local def_len=$max_len
-	fi
+	local def_len=$( get_rand_num $min_len $max_len )
 
 	echo $( head /dev/urandom | tr -dc $rule | head -c $def_len ) 
 }
@@ -74,12 +83,7 @@ iter_inside_dir () {
 	local min_num=${iter_min_num-$DEFAULT_ITER_MIN_NUM} 
 	local max_num=${iter_max_num-$DEFAULT_ITER_MAX_NUM}
 
-	if [[ $min_num -ne $max_num ]]; then
-		local def_iter_num=$(( ( RANDOM % ( max_num - min_num) ) + min_num ))
-	else
-		local def_iter_num=$max_num
-	fi
-
+	local def_iter_num=$( get_rand_num $min_num $max_num )
 	local def_dir_num=$(( RANDOM % def_iter_num ))
 	local def_file_num=$(( def_iter_num - def_dir_num ))
 
@@ -88,11 +92,7 @@ iter_inside_dir () {
 }
 
 generate_tree () {
-	if [[ $depth_min -ne $depth_max ]]; then
-		local def_depth=$(( ( RANDOM % ( depth_max - depth_min) ) + depth_min ))
-	else
-		local def_depth=$depth_max
-	fi
+	local def_depth=$( get_rand_num $depth_min $depth_max )
 
 	mkdir $init_dir
 
@@ -118,6 +118,7 @@ parse_args () {
 	while (( $# > 0 )); do
         case $1 in
 			--help ) show_help; shift;;
+
             -dpf ) depth_min=$2; shift 2;; 
 			-dps ) depth_max=$2; shift 2;;
 			-if ) iter_min_num=$2; shift 2;;
@@ -131,10 +132,12 @@ parse_args () {
 			-dr ) dirname_rule=$2; shift 2;;
 			-fr ) filename_rule=$2; shift 2;;
 			-cr ) content_rule=$2; shift 2;;
+
 			-d ) depth_min=$2; depth_max=$2; shift 2;;
 			-i ) iter_min_num=$2; iter_max_num=$2; shift 2;;
 			-c ) content_min_len=1; content_max_len=$2; shift 2;;
 			-r ) dirname_rule=$2; filename_rule=$2; content_rule=$2; shift 2;;
+
 			* ) init_dir=$( realpath $1 ); shift;;
         esac
     done
