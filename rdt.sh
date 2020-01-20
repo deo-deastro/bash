@@ -3,13 +3,13 @@
 DEFAULT_RAND_STR_RULE="a-zA-Z0-9"
 
 DEFAULT_DEPTH_MIN=5
-DEFAULT_DEPTH_MAX=10
+DEFAULT_DEPTH_MAX=5
 
 DEFAULT_STR_MIN_LEN=5
 DEFAULT_STR_MAX_LEN=10
 
 DEFAULT_ITER_MIN_NUM=5
-DEFAULT_ITER_MIN_NUM=10
+DEFAULT_ITER_MAX_NUM=10
 
 DEFAULT_DIRNAME_MIN_LEN=5
 DEFAULT_DIRNAME_MAX_LEN=10
@@ -41,7 +41,9 @@ get_rand_str () {
 
 	local def_len=$( get_rand_num $min_len $max_len )
 
-	echo $( head /dev/urandom | tr -dc $rule | head -c $def_len ) 
+	local str=$( < /dev/urandom tr -dc $rule | head -c $def_len )
+
+	echo $str
 }
 
 make_rand_dirs () {
@@ -92,7 +94,11 @@ iter_inside_dir () {
 }
 
 generate_tree () {
+	local depth_min=${depth_min-$DEFAULT_DEPTH_MIN}
+	local depth_max=${depth_max-$DEFAULT_DEPTH_MAX}
 	local def_depth=$( get_rand_num $depth_min $depth_max )
+
+	echo $def_depth
 
 	mkdir $init_dir
 
@@ -110,39 +116,68 @@ generate_tree () {
 	done
 }
 
-show_help () {
-	echo "Help"
-}
-
 parse_args () {
 	while (( $# > 0 )); do
         case $1 in
-			--help ) show_help; shift;;
+            -dpf ) depth_min=$2;                                     shift 2;; 
+			-dps ) depth_max=$2;                                     shift 2;;
+			-if )  iter_min_num=$2;                                  shift 2;;
+			-is )  iter_min_num=$2;                                  shift 2;;
+			-df )  dirname_min_len=$2;                               shift 2;;
+			-ds )  dirname_max_len=$2;                               shift 2;;
+			-ff )  filename_min_len=$2;                              shift 2;;
+			-fs )  filename_max_len=$2;                              shift 2;;
+			-cf )  content_min_len=$2;                               shift 2;;
+			-cs )  content_max_len=$2;                               shift 2;;
+			-dr )  dirname_rule=$2;                                  shift 2;;
+			-fr )  filename_rule=$2;                                 shift 2;;
+			-cr )  content_rule=$2;                                  shift 2;;
 
-            -dpf ) depth_min=$2; shift 2;; 
-			-dps ) depth_max=$2; shift 2;;
-			-if ) iter_min_num=$2; shift 2;;
-			-is ) iter_min_num=$2; shift 2;;
-			-df ) dirname_min_len=$2; shift 2;;
-			-ds ) dirname_max_len=$2; shift 2;;
-			-ff ) filename_min_len=$2; shift 2;;
-			-fs ) filename_max_len=$2; shift 2;;
-			-cf ) content_min_len=$2; shift 2;;
-			-cs ) content_max_len=$2; shift 2;;
-			-dr ) dirname_rule=$2; shift 2;;
-			-fr ) filename_rule=$2; shift 2;;
-			-cr ) content_rule=$2; shift 2;;
+			-h | --help ) show_help;                                 shift;;
 
-			-d ) depth_min=$2; depth_max=$2; shift 2;;
-			-i ) iter_min_num=$2; iter_max_num=$2; shift 2;;
-			-c ) content_min_len=1; content_max_len=$2; shift 2;;
+			-d ) depth_min=$2; depth_max=$2;                         shift 2;;
+			-i ) iter_min_num=$2; iter_max_num=$2;                   shift 2;;
+			-c ) content_min_len=1; content_max_len=$2;              shift 2;;
 			-r ) dirname_rule=$2; filename_rule=$2; content_rule=$2; shift 2;;
 
-			* ) init_dir=$( realpath $1 ); shift;;
+			* ) init_dir=$( realpath $1 );                           shift;;
         esac
     done
 }
 
+show_help () {
+	printf "
+Usage: $(basename $0) [OPTIONS] DIRECTORY
+
+Options:											    
+  -h, --help  Show help text							
+
+  -dpf        Set minimal nesting depth				    
+  -dps        Set maximal nesting depth				    
+  -if         Set minimum iterations for each directory 
+  -is         Set maximum iterations for each directory 
+  -df         Set directory minimal name length		    
+  -ds         Set directory maximal name length		    
+  -ff         Set file minimal name length			    
+  -fs         Set file maximal name length			    
+  -cf         Set content minumal length				
+  -cs         Set content maximal length				
+  -dr         Set directory naming rule				    
+  -fr         Set file naming rule					    
+  -cr         Set content naming rule					
+
+  -d          Set depth as constant					    
+  -i          Set number of iterations as constant	    
+  -c          Set content length as constant			
+  -r          Set the same naming rule for everything
+	"
+	echo ""
+}
+
+######################################_EX_#####################################
+
 parse_args $@
-# echo "$depth_min, $depth_max, $iter_min_num, $iter_min_num, $dirname_min_len, $dirname_max_len, $filename_min_len, $filename_max_len, $content_min_len, $content_max_len, $dirname_rule, $filename_rule, $content_rule=$2, $depth_min, $depth_max, $iter_min_num, $iter_max_num, $filename_min_len, $filename_max_len, $dirname_rule, $filename_rule, $content_rule, $init_dir"
-generate_tree $init_dir
+
+if [[ $init_dir ]]; then
+	generate_tree $init_dir
+fi
