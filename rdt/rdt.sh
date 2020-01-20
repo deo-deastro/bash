@@ -98,8 +98,6 @@ generate_tree () {
 	local depth_max=${depth_max-$DEFAULT_DEPTH_MAX}
 	local def_depth=$( get_rand_num $depth_min $depth_max )
 
-	echo $def_depth
-
 	mkdir $init_dir
 
 	iter_inside_dir $init_dir
